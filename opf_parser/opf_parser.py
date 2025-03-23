@@ -4,15 +4,15 @@ import xml.etree.ElementTree as ET
 
 class OPFParser:
 
-    def __init__(self):
-        pass
+    def __init__(self, contents: str):
+        self._contents = contents
 
-    def in_ext_lib(self, contents, lib_name) -> bool:
-        block = self.get_ext_lib_block(contents)
+    def in_ext_lib(self, lib_name) -> bool:
+        block = self._get_ext_lib_block()
         return self.is_lib_in_block(block, lib_name)
 
-    def get_ext_lib_block(self, contents):
-        return self.extract_meta_field(contents, 'calibre:user_metadata:#ext_library')
+    def _get_ext_lib_block(self):
+        return self.extract_meta_field('calibre:user_metadata:#ext_library')
 
     @classmethod
     def is_lib_in_block(cls, block, lib_name):
@@ -21,14 +21,20 @@ class OPFParser:
             return lib_name in json_block['#value#']
         return False
 
-    @classmethod
-    def extract_meta_field(cls, xml_string, field_name):
-        if not xml_string:
+    def extract_meta_field(self, field_name):
+        element = self.extract_element(f".//*[@name='{field_name}']")
+        return element.get("content")
+
+    def extract_element(self, expression: str):
+        if not self._contents:
             return None
         try:
-            root = ET.fromstring(xml_string.strip())
-            for meta in root.findall(f".//*[@name='{field_name}']"):
-                return meta.get("content")
+            root = ET.fromstring(self._contents.strip())
+            for meta in root.findall(expression):
+                return meta
         except ET.ParseError:
             return None
         return None
+
+    def get_title(self):
+        return self.extract_element('.//{http://purl.org/dc/elements/1.1/}title').text

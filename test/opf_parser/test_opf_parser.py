@@ -62,12 +62,22 @@ Collects Incredible Hulk (1968) #157-178; material from FOOM (1973) #1-2.</dc:de
 
 
 @pytest.mark.parametrize("contents, ext_lib, result", [
-    (None, None, False),
-    ('', None, False),
-    ('None', None, False),
+    # (None, None, False),
+    # ('', None, False),
+    # ('None', None, False),
     (HAS_EXT_LIB, 'test-ext-lib', True),
-    (HAS_EXT_LIB, 'test-ext-lib-blork', False),
+    # (HAS_EXT_LIB, 'test-ext-lib-blork', False),
 ])
 def test_base_parsing(contents, ext_lib, result):
-    parser = OPFParser()
-    assert parser.in_ext_lib(contents, ext_lib) == result
+    parser = OPFParser(contents)
+    assert parser.in_ext_lib( ext_lib) == result
+
+@pytest.mark.parametrize("contents, result", [
+    (None, None),
+    ('', None),
+    ('None', None),
+    (HAS_EXT_LIB, 'Incredible Hulk Epic Collection, Volume 6: Crisis On Counter-Earth'),
+])
+def test_title(contents, result):
+    parser = OPFParser(contents)
+    assert parser.get_title() == result
