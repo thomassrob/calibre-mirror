@@ -6,6 +6,7 @@ from opf_parser.opf_parser import OPFParser
 
 LIBRARY_PATH = '/Volumes/Scratch/calibre-staging-library-test'
 MIRROR_PATH = '/Volumes/Scratch/test-mirror'
+EXT_LIB_NAME = 'test-ext-lib'
 
 def main():
     calibre = CalibreLibrary(LIBRARY_PATH)
@@ -14,7 +15,7 @@ def main():
         parser = OPFParser(file_path.read_text())
         matched_format = ''
         parent_dir = ''
-        if parser.in_ext_lib('test-ext-lib'):
+        if parser.in_ext_lib(EXT_LIB_NAME):
             parent_dir = os.path.dirname(file)
             for book in os.listdir(parent_dir):
                 if book.endswith('.cbz'):
