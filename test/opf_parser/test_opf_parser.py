@@ -61,7 +61,6 @@ Collects Incredible Hulk (1968) #157-178; material from FOOM (1973) #1-2.</dc:de
 '''
 
 
-# class MyTestCase(unittest.TestCase):
 @pytest.mark.parametrize("contents, ext_lib, result", [
     (None, None, False),
     ('', None, False),

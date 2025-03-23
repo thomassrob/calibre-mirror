@@ -14,7 +14,8 @@ class OPFParser:
     def get_ext_lib_block(self, contents):
         return self.extract_meta_field(contents, 'calibre:user_metadata:#ext_library')
 
-    def is_lib_in_block(self, block, lib_name):
+    @classmethod
+    def is_lib_in_block(cls, block, lib_name):
         if block:
             json_block = json.loads(block)
             return lib_name in json_block['#value#']
