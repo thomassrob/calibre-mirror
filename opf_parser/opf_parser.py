@@ -38,3 +38,6 @@ class OPFParser:
 
     def get_title(self):
         return self.extract_element('.//{http://purl.org/dc/elements/1.1/}title').text
+
+    def get_series(self):
+        return self.extract_meta_field('calibre:series')
