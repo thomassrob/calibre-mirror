@@ -25,6 +25,7 @@ def main():
             parent_dir = os.path.dirname(file)
             for book in os.listdir(parent_dir):
                 if book.endswith('.cbz'):
+                    print(f'Found {book}')
                     matched_format = book
 
             title = parser.get_title()
