@@ -27,18 +27,18 @@ def main():
                 if book.endswith('.cbz'):
                     print(f'Found {book}')
                     matched_format = book
-
-            title = parser.get_title()
-            series = parser.get_series()
-            source_path = os.path.join(parent_dir, matched_format)
-            parent_link = os.path.join(config.get('mirror_path', MIRROR_PATH), series if series is not None else title)
-            link_path = os.path.join(parent_link, matched_format)
-            os.makedirs(parent_link, exist_ok=True)
-            if not DRY_RUN:
-                print(f'Linking {source_path} to {link_path}')
-                os.link(source_path, link_path)
-            else:
-                print(f'<DRYRUN>Linking {source_path} to {link_path}')
+            if matched_format is not None:
+                title = parser.get_title()
+                series = parser.get_series()
+                source_path = os.path.join(parent_dir, matched_format)
+                parent_link = os.path.join(config.get('mirror_path', MIRROR_PATH), series if series is not None else title)
+                link_path = os.path.join(parent_link, matched_format)
+                os.makedirs(parent_link, exist_ok=True)
+                if not DRY_RUN:
+                    print(f'Linking {source_path} to {link_path}')
+                    os.link(source_path, link_path)
+                else:
+                    print(f'<DRYRUN>Linking {source_path} to {link_path}')
 
 
 if __name__ == "__main__":
