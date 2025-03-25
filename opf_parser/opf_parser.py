@@ -38,8 +38,8 @@ class OPFParser:
 
     def get_title(self):
         element = self.extract_element('.//{http://purl.org/dc/elements/1.1/}title')
-        return element.text if element != None else None
+        return element.text if element is not None else None
 
     def get_series(self):
         element = self.extract_meta_field('calibre:series')
-        return element.text if element != None else None
+        return element if element is not None else None
