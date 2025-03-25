@@ -31,7 +31,7 @@ def main():
             title = parser.get_title()
             series = parser.get_series()
             source_path = os.path.join(parent_dir, matched_format)
-            parent_link = os.path.join(config.get('mirror_path', MIRROR_PATH), series, title)
+            parent_link = os.path.join(config.get('mirror_path', MIRROR_PATH), series if series is not None else title)
             link_path = os.path.join(parent_link, matched_format)
             os.makedirs(parent_link, exist_ok=True)
             if not DRY_RUN:
