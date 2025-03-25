@@ -23,7 +23,7 @@ class OPFParser:
 
     def extract_meta_field(self, field_name):
         element = self.extract_element(f".//*[@name='{field_name}']")
-        return element.get("content")
+        return element.get("content") if element != None else None
 
     def extract_element(self, expression: str):
         if not self._contents:
@@ -37,7 +37,9 @@ class OPFParser:
         return None
 
     def get_title(self):
-        return self.extract_element('.//{http://purl.org/dc/elements/1.1/}title').text
+        element = self.extract_element('.//{http://purl.org/dc/elements/1.1/}title')
+        return element.text if element != None else None
 
     def get_series(self):
-        return self.extract_meta_field('calibre:series')
+        element = self.extract_meta_field('calibre:series')
+        return element.text if element != None else None
