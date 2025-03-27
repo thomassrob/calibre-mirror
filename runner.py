@@ -19,6 +19,8 @@ def main():
     config = ConfigReader(CONFIG_PATH).config
     lib_path = config.get('library_path', LIBRARY_PATH)
     calibre = CalibreLibrary(lib_path)
+    dry_run = config.get('dry_run', DRY_RUN)
+
     dest_format = DEST_FORMAT
     for file in calibre.list_all_opf():
         file_path = Path(file)
@@ -36,9 +38,9 @@ def main():
                 source_path = os.path.join(parent_dir, matched_format)
                 #todo switch this to be <title>.<format>
                 parent_link = os.path.join(config.get('mirror_path', MIRROR_PATH), series if series is not None else title)
-                link_path = os.path.join(parent_link, f'{title}.{dest_format}')
+                link_path = os.path.join(parent_link, f'{title}{dest_format}')
                 os.makedirs(parent_link, exist_ok=True)
-                if not DRY_RUN:
+                if not dry_run:
                     print(f'Linking {source_path} to {link_path}')
                     os.link(source_path, link_path)
                 else:
