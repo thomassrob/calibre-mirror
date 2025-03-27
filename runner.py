@@ -26,9 +26,9 @@ def main():
     for file in calibre.list_all_opf():
         file_path = Path(file)
         parser = OPFParser(file_path.read_text())
-        matched_format = ''
         if parser.in_ext_lib(config.get('ext_lib_name', EXT_LIB_NAME)):
             parent_dir = os.path.dirname(file)
+            matched_format = None
             for book in os.listdir(parent_dir):
                 if book.endswith(SOURCE_FORMAT):
                     print(f'Found {book}')
