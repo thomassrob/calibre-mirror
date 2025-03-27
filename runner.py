@@ -9,14 +9,17 @@ LIBRARY_PATH = '/Volumes/Scratch/calibre-staging-library-test-2'
 MIRROR_PATH = '/Volumes/Scratch/test-mirror'
 EXT_LIB_NAME = 'test-ext-lib'
 DRY_RUN = True
+SOURCE_FORMAT = '.kepub'
+DEST_FORMAT = '.epub'
 
 CONFIG_PATH = './config.yaml'
-
+#todo add source_ext and destination_ext
 
 def main():
     config = ConfigReader(CONFIG_PATH).config
     lib_path = config.get('library_path', LIBRARY_PATH)
     calibre = CalibreLibrary(lib_path)
+    dest_format = DEST_FORMAT
     for file in calibre.list_all_opf():
         file_path = Path(file)
         parser = OPFParser(file_path.read_text())
@@ -24,15 +27,16 @@ def main():
         if parser.in_ext_lib(config.get('ext_lib_name', EXT_LIB_NAME)):
             parent_dir = os.path.dirname(file)
             for book in os.listdir(parent_dir):
-                if book.endswith('.cbz'):
+                if book.endswith(SOURCE_FORMAT):
                     print(f'Found {book}')
                     matched_format = book
             if matched_format is not None:
                 title = parser.get_title()
                 series = parser.get_series()
                 source_path = os.path.join(parent_dir, matched_format)
+                #todo switch this to be <title>.<format>
                 parent_link = os.path.join(config.get('mirror_path', MIRROR_PATH), series if series is not None else title)
-                link_path = os.path.join(parent_link, matched_format)
+                link_path = os.path.join(parent_link, f'{title}.{dest_format}')
                 os.makedirs(parent_link, exist_ok=True)
                 if not DRY_RUN:
                     print(f'Linking {source_path} to {link_path}')
