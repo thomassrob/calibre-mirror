@@ -42,8 +42,11 @@ def main():
                 link_path = os.path.join(parent_link, sanitize_filename(f'{title}{dest_format}'))
                 os.makedirs(parent_link, exist_ok=True)
                 if not dry_run:
-                    print(f'Linking {source_path} to {link_path}')
-                    os.link(source_path, link_path)
+                    if not os.path.exists(link_path):
+                        print(f'Linking {source_path} to {link_path}')
+                        os.link(source_path, link_path)
+                    else:
+                        print(f'{link_path} already exists, skipping')
                 else:
                     print(f'<DRYRUN>Linking {source_path} to {link_path}')
 
