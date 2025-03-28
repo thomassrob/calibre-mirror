@@ -15,9 +15,10 @@ DEST_FORMAT = '.epub'
 
 CONFIG_PATH = './config.yaml'
 
+
 def main():
-    config = ConfigReader(CONFIG_PATH).config
-    for config_group in config:
+    configs = ConfigReader(CONFIG_PATH).configs
+    for config_group in configs:
         lib_path = config_group.get('library_path', LIBRARY_PATH)
         calibre = CalibreLibrary(lib_path)
         dry_run = config_group.get('dry_run', DRY_RUN)
@@ -38,7 +39,8 @@ def main():
                     title = parser.get_title()
                     series = parser.get_series()
                     source_path = os.path.join(parent_dir, matched_format)
-                    parent_link = os.path.join(config_group.get('mirror_path', MIRROR_PATH), series if series is not None else title)
+                    parent_link = os.path.join(config_group.get('mirror_path', MIRROR_PATH),
+                                               series if series is not None else title)
                     link_path = os.path.join(parent_link, sanitize_filename(f'{title}{dest_format}'))
                     os.makedirs(parent_link, exist_ok=True)
                     if not dry_run:

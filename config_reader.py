@@ -6,11 +6,13 @@ import yaml
 class ConfigReader:
 
     def __init__(self, config_path: str):
-        self._config = {}
+        self._configs = []
         if os.path.exists(config_path):
             with open(config_path, "r") as f:
-                self._config = yaml.safe_load_all(f)
+                for config in yaml.safe_load_all(f):
+                    print(config)
+                    self._configs.append(config)
 
     @property
-    def config(self):
-        return self._config
+    def configs(self):
+        return self._configs
