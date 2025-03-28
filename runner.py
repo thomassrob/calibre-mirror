@@ -14,7 +14,6 @@ SOURCE_FORMAT = '.kepub'
 DEST_FORMAT = '.epub'
 
 CONFIG_PATH = './config.yaml'
-#todo add source_ext and destination_ext
 
 def main():
     config = ConfigReader(CONFIG_PATH).config
@@ -38,7 +37,6 @@ def main():
                 title = parser.get_title()
                 series = parser.get_series()
                 source_path = os.path.join(parent_dir, matched_format)
-                #todo switch this to be <title>.<format>
                 parent_link = os.path.join(config.get('mirror_path', MIRROR_PATH), series if series is not None else title)
                 link_path = os.path.join(parent_link, sanitize_filename(f'{title}{dest_format}'))
                 os.makedirs(parent_link, exist_ok=True)
