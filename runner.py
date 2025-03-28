@@ -21,8 +21,9 @@ def main():
     lib_path = config.get('library_path', LIBRARY_PATH)
     calibre = CalibreLibrary(lib_path)
     dry_run = config.get('dry_run', DRY_RUN)
+    source_format = config.get('source_format', SOURCE_FORMAT)
+    dest_format = config.get('dest_format', DEST_FORMAT)
 
-    dest_format = DEST_FORMAT
     for file in calibre.list_all_opf():
         file_path = Path(file)
         parser = OPFParser(file_path.read_text())
@@ -30,7 +31,7 @@ def main():
             parent_dir = os.path.dirname(file)
             matched_format = None
             for book in os.listdir(parent_dir):
-                if book.endswith(SOURCE_FORMAT):
+                if book.endswith(source_format):
                     print(f'Found {book}')
                     matched_format = book
             if matched_format is not None:
