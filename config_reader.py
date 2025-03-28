@@ -9,7 +9,7 @@ class ConfigReader:
         self._config = {}
         if os.path.exists(config_path):
             with open(config_path, "r") as f:
-                self._config = yaml.safe_load(f)
+                self._config = yaml.safe_load_all(f)
 
     @property
     def config(self):

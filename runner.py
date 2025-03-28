@@ -17,37 +17,38 @@ CONFIG_PATH = './config.yaml'
 
 def main():
     config = ConfigReader(CONFIG_PATH).config
-    lib_path = config.get('library_path', LIBRARY_PATH)
-    calibre = CalibreLibrary(lib_path)
-    dry_run = config.get('dry_run', DRY_RUN)
-    source_format = config.get('source_format', SOURCE_FORMAT)
-    dest_format = config.get('dest_format', DEST_FORMAT)
+    for config_group in config:
+        lib_path = config_group.get('library_path', LIBRARY_PATH)
+        calibre = CalibreLibrary(lib_path)
+        dry_run = config_group.get('dry_run', DRY_RUN)
+        source_format = config_group.get('source_format', SOURCE_FORMAT)
+        dest_format = config_group.get('dest_format', DEST_FORMAT)
 
-    for file in calibre.list_all_opf():
-        file_path = Path(file)
-        parser = OPFParser(file_path.read_text())
-        if parser.in_ext_lib(config.get('ext_lib_name', EXT_LIB_NAME)):
-            parent_dir = os.path.dirname(file)
-            matched_format = None
-            for book in os.listdir(parent_dir):
-                if book.endswith(source_format):
-                    print(f'Found {book}')
-                    matched_format = book
-            if matched_format is not None:
-                title = parser.get_title()
-                series = parser.get_series()
-                source_path = os.path.join(parent_dir, matched_format)
-                parent_link = os.path.join(config.get('mirror_path', MIRROR_PATH), series if series is not None else title)
-                link_path = os.path.join(parent_link, sanitize_filename(f'{title}{dest_format}'))
-                os.makedirs(parent_link, exist_ok=True)
-                if not dry_run:
-                    if not os.path.exists(link_path):
-                        print(f'Linking {source_path} to {link_path}')
-                        os.link(source_path, link_path)
+        for file in calibre.list_all_opf():
+            file_path = Path(file)
+            parser = OPFParser(file_path.read_text())
+            if parser.in_ext_lib(config_group.get('ext_lib_name', EXT_LIB_NAME)):
+                parent_dir = os.path.dirname(file)
+                matched_format = None
+                for book in os.listdir(parent_dir):
+                    if book.endswith(source_format):
+                        print(f'Found {book}')
+                        matched_format = book
+                if matched_format is not None:
+                    title = parser.get_title()
+                    series = parser.get_series()
+                    source_path = os.path.join(parent_dir, matched_format)
+                    parent_link = os.path.join(config_group.get('mirror_path', MIRROR_PATH), series if series is not None else title)
+                    link_path = os.path.join(parent_link, sanitize_filename(f'{title}{dest_format}'))
+                    os.makedirs(parent_link, exist_ok=True)
+                    if not dry_run:
+                        if not os.path.exists(link_path):
+                            print(f'Linking {source_path} to {link_path}')
+                            os.link(source_path, link_path)
+                        else:
+                            print(f'{link_path} already exists, skipping')
                     else:
-                        print(f'{link_path} already exists, skipping')
-                else:
-                    print(f'<DRYRUN>Linking {source_path} to {link_path}')
+                        print(f'<DRYRUN>Linking {source_path} to {link_path}')
 
 
 if __name__ == "__main__":
