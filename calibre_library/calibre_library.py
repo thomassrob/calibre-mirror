@@ -17,7 +17,7 @@ class CalibreLibrary:
                     file_paths.append(file_path)
                     count += 1
                     if count % 100 == 0:
-                        print('.', end='')
+                        print('.', end='', flush=True)
                     # print(f'Found opf: {file_path}')
         print (f'\nDone looking for opf files in {self._path}')
         return file_paths
