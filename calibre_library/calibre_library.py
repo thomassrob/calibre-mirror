@@ -10,8 +10,8 @@ class CalibreLibrary:
 
         file_paths = []
         for dirpath, dirnames, filenames in os.walk(self._path):
+            count = 0
             for filename in filenames:
-                count=0
                 if filename == 'metadata.opf':
                     file_path = os.path.join(dirpath, filename)
                     file_paths.append(file_path)
