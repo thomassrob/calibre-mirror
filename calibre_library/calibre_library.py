@@ -19,7 +19,7 @@ class CalibreLibrary:
                     if count % 100 == 0:
                         print('.', end='')
                     # print(f'Found opf: {file_path}')
-        print (f'Done looking for opf files in {self._path}')
+        print (f'\nDone looking for opf files in {self._path}')
         return file_paths
 
 
