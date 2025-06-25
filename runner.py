@@ -38,10 +38,14 @@ def main():
                 if matched_format is not None:
                     title = parser.get_title()
                     series = parser.get_series()
+                    series_index = parser.get_series_index()
                     source_path = os.path.join(parent_dir, matched_format)
                     parent_link = os.path.join(config_group.get('mirror_path', MIRROR_PATH),
                                                series if series is not None else title)
-                    link_path = os.path.join(parent_link, sanitize_filename(f'{title}{dest_format}'))
+                    if series_index:
+                        link_path = os.path.join(parent_link, sanitize_filename(f'{series_index} - {title}{dest_format}'))
+                    else:
+                        link_path = os.path.join(parent_link, sanitize_filename(f'{title}{dest_format}'))
                     os.makedirs(parent_link, exist_ok=True)
                     if not dry_run:
                         if not os.path.exists(link_path):
