@@ -43,3 +43,7 @@ class OPFParser:
     def get_series(self):
         element = self.extract_meta_field('calibre:series')
         return element if element is not None else None
+
+    def get_series_index(self):
+        element = self.extract_meta_field('calibre:series_index')
+        return element if element is not None else None
