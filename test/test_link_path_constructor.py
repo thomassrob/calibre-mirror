@@ -165,44 +165,62 @@ class TestLinkPathConstructor:
         expected_path = os.path.join(self.mirror_path, "作者名 Series", "1 - 📚 The Great Adventure 📚.epub")
         assert link_path == expected_path
     
-    def test_empty_strings(self):
-        """Test link path construction with empty strings."""
+    # def test_empty_strings(self):
+    #     """Test link path construction with empty strings."""
+    #     # Create mock parser
+    #     mock_parser = Mock(spec=OPFParser)
+    #     mock_parser.get_title.return_value = ""
+    #     mock_parser.get_series.return_value = ""
+    #     mock_parser.get_series_index.return_value = None
+    #
+    #     link_path = self.constructor.construct_link_path(mock_parser, "book.kepub")
+    #
+    #     expected_path = os.path.join(self.mirror_path, "", ".epub")
+    #     assert link_path == expected_path
+    #
+    @pytest.mark.parametrize("title, series, series_index,expected_filename", [
+        ('The Great Adventure', 'Fantasy Series', None, "Fantasy Series/The Great Adventure.epub"),
+        ('The Great Adventure', 'Fantasy Series', '', "Fantasy Series/The Great Adventure.epub"),
+        ('The Great Adventure', "", 0, "The Great Adventure/The Great Adventure.epub"),
+        ('The Great Adventure', None, 0, "The Great Adventure/The Great Adventure.epub"),
+        ('The Great Adventure', 'Fantasy Series', 0, "Fantasy Series/0 - The Great Adventure.epub"),
+        ('The Great Adventure', 'Fantasy Series', 1.5, "Fantasy Series/1.5 - The Great Adventure.epub"),
+        ('The Great Adventure', 'Fantasy Series', 2.5, "Fantasy Series/2.5 - The Great Adventure.epub"),
+        ('The Great Adventure', 'Fantasy Series', 0.5, "Fantasy Series/0.5 - The Great Adventure.epub"),
+        ('The Great Adventure', 'Fantasy Series', 10.25, "Fantasy Series/10.25 - The Great Adventure.epub"),
+        ('The Great Adventure', 'Fantasy Series', 1.0, "Fantasy Series/1.0 - The Great Adventure.epub"),
+    ])
+    def test_series_index_float(self, title, series, series_index, expected_filename):
+        """Test link path construction with various float series indices."""
         # Create mock parser
         mock_parser = Mock(spec=OPFParser)
-        mock_parser.get_title.return_value = ""
-        mock_parser.get_series.return_value = ""
-        mock_parser.get_series_index.return_value = None
+        mock_parser.get_title.return_value = title
+        mock_parser.get_series.return_value = series
+        mock_parser.get_series_index.return_value = series_index
         
         link_path = self.constructor.construct_link_path(mock_parser, "book.kepub")
         
-        expected_path = os.path.join(self.mirror_path, "", ".epub")
+        expected_path = os.path.join(self.mirror_path, expected_filename)
         assert link_path == expected_path
-    
-    def test_series_index_zero(self):
-        """Test link path construction with series index of 0."""
+
+    @pytest.mark.parametrize("title, series, series_index", [
+        ("", 'Fantasy Series', 0),
+        (None, 'Fantasy Series', 0),
+        (None, 'Fantasy Series', None),
+        (None, None, 0),
+        (None, None, None),
+    ])
+    def test_none(self, title, series, series_index):
+        """Test link path construction with various float series indices."""
         # Create mock parser
         mock_parser = Mock(spec=OPFParser)
-        mock_parser.get_title.return_value = "The Great Adventure"
-        mock_parser.get_series.return_value = "Fantasy Series"
-        mock_parser.get_series_index.return_value = 0
-        
+        mock_parser.get_title.return_value = title
+        mock_parser.get_series.return_value = series
+        mock_parser.get_series_index.return_value = series_index
+
         link_path = self.constructor.construct_link_path(mock_parser, "book.kepub")
-        
-        expected_path = os.path.join(self.mirror_path, "Fantasy Series", "0 - The Great Adventure.epub")
-        assert link_path == expected_path
-    
-    def test_series_index_float(self):
-        """Test link path construction with float series index."""
-        # Create mock parser
-        mock_parser = Mock(spec=OPFParser)
-        mock_parser.get_title.return_value = "The Great Adventure"
-        mock_parser.get_series.return_value = "Fantasy Series"
-        mock_parser.get_series_index.return_value = 1.5
-        
-        link_path = self.constructor.construct_link_path(mock_parser, "book.kepub")
-        
-        expected_path = os.path.join(self.mirror_path, "Fantasy Series", "1.5 - The Great Adventure.epub")
-        assert link_path == expected_path
+
+        assert link_path == None
 
 
 class TestLinkPathConstructorIntegration:
