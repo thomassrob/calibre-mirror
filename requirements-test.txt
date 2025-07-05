@@ -1,0 +1,5 @@
+# Testing dependencies for calibre-mirror project
+pytest>=7.0.0
+pyfakefs>=5.0.0
+pyyaml>=6.0.0
+pathvalidate>=3.0.0 
