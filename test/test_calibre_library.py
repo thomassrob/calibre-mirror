@@ -1,9 +1,6 @@
 import os
-import tempfile
-import shutil
 from pathlib import Path
 
-import fs
 import pytest
 
 from calibre_library.calibre_library import CalibreLibrary
@@ -134,31 +131,22 @@ class TestCalibreLibrary:
 
 
 class TestCalibreLibraryIntegration:
-    """Integration tests using real file system."""
+    """Integration tests using fake file system."""
     
-    def setup_method(self):
-        """Set up temporary directory for each test."""
-        self.temp_dir = tempfile.mkdtemp()
-    
-    def teardown_method(self):
-        """Clean up temporary directory after each test."""
-        shutil.rmtree(self.temp_dir, ignore_errors=True)
-    
-    def test_real_file_system(self):
-        """Test with real file system operations."""
+    def test_fake_file_system(self, fs):
+        """Test with fake file system operations."""
         # Create test structure
-        book1_dir = os.path.join(self.temp_dir, 'book1')
-        book2_dir = os.path.join(self.temp_dir, 'book2', 'nested')
-        os.makedirs(book1_dir)
-        os.makedirs(book2_dir)
+        test_root = '/test/library'
+        book1_dir = os.path.join(test_root, 'book1')
+        book2_dir = os.path.join(test_root, 'book2', 'nested')
+        fs.create_dir(book1_dir)
+        fs.create_dir(book2_dir)
         
         # Create opf files
-        with open(os.path.join(book1_dir, 'metadata.opf'), 'w') as f:
-            f.write('test content')
-        with open(os.path.join(book2_dir, 'metadata.opf'), 'w') as f:
-            f.write('test content')
+        fs.create_file(os.path.join(book1_dir, 'metadata.opf'), contents='test content')
+        fs.create_file(os.path.join(book2_dir, 'metadata.opf'), contents='test content')
         
-        lib = CalibreLibrary(self.temp_dir)
+        lib = CalibreLibrary(test_root)
         result = lib.list_all_opf()
         
         expected = [
@@ -167,10 +155,42 @@ class TestCalibreLibraryIntegration:
         ]
         assert sorted(expected) == sorted(result)
     
-    def test_empty_real_directory(self):
-        """Test with empty real directory."""
-        lib = CalibreLibrary(self.temp_dir)
+    def test_empty_fake_directory(self, fs):
+        """Test with empty fake directory."""
+        test_root = '/test/empty/library'
+        fs.create_dir(test_root)
+        
+        lib = CalibreLibrary(test_root)
         assert [] == lib.list_all_opf()
+    
+    def test_permissions_and_symlinks(self, fs):
+        """Test handling of different file permissions and symlinks."""
+        test_root = '/test/library'
+        book_dir = os.path.join(test_root, 'book1')
+        fs.create_dir(book_dir)
+        fs.create_file(os.path.join(book_dir, 'metadata.opf'), contents='test content')
+        
+        # Test with read-only files
+        fs.chmod(os.path.join(book_dir, 'metadata.opf'), 0o444)
+        
+        lib = CalibreLibrary(test_root)
+        result = lib.list_all_opf()
+        
+        expected = [os.path.join(book_dir, 'metadata.opf')]
+        assert expected == result
+    
+    def test_special_characters_in_paths(self, fs):
+        """Test handling of special characters in file paths."""
+        test_root = '/test/library'
+        book_dir = os.path.join(test_root, 'book with spaces')
+        fs.create_dir(book_dir)
+        fs.create_file(os.path.join(book_dir, 'metadata.opf'), contents='test content')
+        
+        lib = CalibreLibrary(test_root)
+        result = lib.list_all_opf()
+        
+        expected = [os.path.join(book_dir, 'metadata.opf')]
+        assert expected == result
 
 
 # Keep the original simple tests for backward compatibility
