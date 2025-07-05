@@ -1,0 +1,3 @@
+# Main dependencies for calibre-mirror project
+PyYAML>=6.0.0
+pathvalidate>=3.0.0 
