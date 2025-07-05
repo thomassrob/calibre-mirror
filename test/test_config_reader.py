@@ -101,10 +101,14 @@ class TestConfigReader:
         with open(config_path, 'w') as f:
             f.write('invalid: yaml: syntax: [\n')
         
-        # Should handle YAML parsing errors gracefully
-        config_reader = ConfigReader(config_path)
-        # The current implementation doesn't handle YAML errors, so this might raise an exception
-        # This test documents the current behavior
+        # Should raise ValueError with informative error message
+        with pytest.raises(ValueError) as exc_info:
+            ConfigReader(config_path)
+        
+        error_message = str(exc_info.value)
+        assert "Error parsing YAML file" in error_message
+        assert config_path in error_message
+        assert "mapping values are not allowed here" in error_message.lower()
     
     def test_configs_property(self):
         """Test that configs property returns the correct data."""
