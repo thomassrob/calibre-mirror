@@ -32,7 +32,8 @@ def main():
         # Create LinkPathConstructor instance for this config
         link_constructor = LinkPathConstructor(
             config_group.get('mirror_path', MIRROR_PATH), 
-            dest_format
+            dest_format,
+            config_group.get('author_first', False)
         )
 
         for file in calibre.list_all_opf():

@@ -82,3 +82,11 @@ def test_base_parsing(contents, ext_lib, result):
 def test_title(contents, result):
     parser = OPFParser(contents)
     assert parser.get_title() == result
+
+
+@pytest.mark.parametrize("contents, result", [
+    (HAS_EXT_LIB, 'Archie Goodwin'),
+])
+def test_author(contents, result):
+    parser = OPFParser(contents)
+    assert parser.get_author() == result

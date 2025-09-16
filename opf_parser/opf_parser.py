@@ -47,3 +47,7 @@ class OPFParser:
     def get_series_index(self):
         element = self.extract_meta_field('calibre:series_index')
         return element if element is not None else None
+
+    def get_author(self):
+        element = self.extract_element('.//{http://purl.org/dc/elements/1.1/}creator')
+        return element.text if element is not None else None

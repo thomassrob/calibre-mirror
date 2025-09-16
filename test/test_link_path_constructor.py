@@ -106,6 +106,91 @@ class TestLinkPathConstructor:
 
         assert link_path == None
 
+    def test_author_first_with_series(self):
+        """Test author-first organization with series."""
+        constructor = LinkPathConstructor(self.mirror_path, '.epub', author_first=True)
+        
+        # Create mock parser
+        mock_parser = Mock(spec=OPFParser)
+        mock_parser.get_title.return_value = "The Great Adventure"
+        mock_parser.get_series.return_value = "Fantasy Series"
+        mock_parser.get_series_index.return_value = 1
+        mock_parser.get_author.return_value = "John Doe"
+        
+        link_path = constructor.construct_link_path(mock_parser, "book.kepub")
+        
+        expected_path = os.path.join(self.mirror_path, "John Doe", "Fantasy Series", "1 - The Great Adventure.epub")
+        assert link_path == expected_path
+
+    def test_author_first_without_series(self):
+        """Test author-first organization without series."""
+        constructor = LinkPathConstructor(self.mirror_path, '.epub', author_first=True)
+        
+        # Create mock parser
+        mock_parser = Mock(spec=OPFParser)
+        mock_parser.get_title.return_value = "The Great Adventure"
+        mock_parser.get_series.return_value = None
+        mock_parser.get_series_index.return_value = None
+        mock_parser.get_author.return_value = "John Doe"
+        
+        link_path = constructor.construct_link_path(mock_parser, "book.kepub")
+        
+        expected_path = os.path.join(self.mirror_path, "John Doe", "The Great Adventure", "The Great Adventure.epub")
+        assert link_path == expected_path
+
+    def test_author_first_no_author(self):
+        """Test author-first organization when no author is available."""
+        constructor = LinkPathConstructor(self.mirror_path, '.epub', author_first=True)
+        
+        # Create mock parser
+        mock_parser = Mock(spec=OPFParser)
+        mock_parser.get_title.return_value = "The Great Adventure"
+        mock_parser.get_series.return_value = "Fantasy Series"
+        mock_parser.get_series_index.return_value = 1
+        mock_parser.get_author.return_value = None
+        
+        link_path = constructor.construct_link_path(mock_parser, "book.kepub")
+        
+        expected_path = os.path.join(self.mirror_path, "Unknown Author", "Fantasy Series", "1 - The Great Adventure.epub")
+        assert link_path == expected_path
+
+    def test_author_first_different_format(self):
+        """Test author-first organization with different destination format."""
+        constructor = LinkPathConstructor(self.mirror_path, '.mobi', author_first=True)
+        
+        # Create mock parser
+        mock_parser = Mock(spec=OPFParser)
+        mock_parser.get_title.return_value = "The Great Adventure"
+        mock_parser.get_series.return_value = "Fantasy Series"
+        mock_parser.get_series_index.return_value = 1
+        mock_parser.get_author.return_value = "John Doe"
+        
+        link_path = constructor.construct_link_path(mock_parser, "book.kepub")
+        
+        expected_path = os.path.join(self.mirror_path, "John Doe", "Fantasy Series", "1 - The Great Adventure.mobi")
+        assert link_path == expected_path
+
+    @pytest.mark.parametrize("author, series, title, expected_path", [
+        ('Author/Name', 'Series/Name', 'Book Title', "Author/Name/Series/Name/Book Title.epub"),
+        ('Author:Name', 'Series:Name', 'Book:Title', "Author_Name/Series_Name/Book_Title.epub"),
+        ('Author*Name', 'Series*Name', 'Book*Title', "Author_Name/Series_Name/Book_Title.epub"),
+    ])
+    def test_author_first_special_characters(self, author, series, title, expected_path):
+        """Test author-first organization with special characters in names."""
+        constructor = LinkPathConstructor(self.mirror_path, '.epub', author_first=True)
+        
+        # Create mock parser
+        mock_parser = Mock(spec=OPFParser)
+        mock_parser.get_title.return_value = title
+        mock_parser.get_series.return_value = series
+        mock_parser.get_series_index.return_value = None
+        mock_parser.get_author.return_value = author
+        
+        link_path = constructor.construct_link_path(mock_parser, "book.kepub")
+        
+        expected_full_path = os.path.join(self.mirror_path, expected_path)
+        assert link_path == expected_full_path
+
 
 class TestLinkPathConstructorIntegration:
     """Integration tests for LinkPathConstructor with real OPF parser."""
